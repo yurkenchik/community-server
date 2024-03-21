@@ -6,24 +6,33 @@ import {User} from "./users.model";
 import {AuthModule} from "../auth/auth.module";
 import {JwtModule} from "@nestjs/jwt";
 import * as process from "process";
-import {AuthService} from "../auth/auth.service";
+import {TokenModule} from "../token/token.module";
+import {Role} from "../roles/roles.model";
+import {RolesModule} from "../roles/roles.module";
+import {RolesService} from "../roles/roles.service";
+import {UserRoles} from "../roles/user_roles.model";
+import {PostsModule} from "../posts/posts.module";
+import {Post} from "../posts/posts.model";
 
 @Module({
   providers: [UsersService],
   controllers: [UsersController],
   imports: [
+      forwardRef(() => TokenModule),
       forwardRef(() => AuthModule),
-      TypeOrmModule.forFeature([User]),
+      forwardRef(() => PostsModule),
+      RolesModule,
+      TypeOrmModule.forFeature([User, Role, UserRoles, Post]),
       JwtModule.register({
           secret: process.env.JWT_SECRET_KEY,
           signOptions: {
               expiresIn: "24h"
           }
-      }),
-      AuthService
+      })
   ],
   exports: [
-      UsersService
+      UsersService,
+      TypeOrmModule
   ]
 
 })

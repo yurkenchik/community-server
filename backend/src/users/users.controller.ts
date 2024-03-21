@@ -1,32 +1,80 @@
-import {Body, Controller, Get, HttpException, HttpStatus, Param, Post} from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpException,
+    HttpStatus,
+    Param,
+    Post, UseGuards,
+    UsePipes,
+    ValidationPipe
+} from '@nestjs/common';
 import {UsersService} from "./users.service";
-import {CreateUserDto} from "./dto/create-user.dto";
+import {RegisterUserDto} from "./dto/register-user.dto";
 import {ApiOperation, ApiResponse} from "@nestjs/swagger";
 import {User} from "./users.model";
-import {UsersModule} from "./users.module";
-
+import {JwtAuthGuard} from "../auth/jwt-auth.guard";
+import {Roles} from "../auth/roles-auth.decorator";
+import {RoleGuard} from "../auth/role.guard";
+import {AddRoleDto} from "./dto/add-role.dto";
+import {GetUserByIdDto} from "./dto/get-user-by-id.dto";
+import {Role} from "../roles/roles.model";
+import {BanUserDto} from "./dto/banUser.dto";
 
 @Controller('users')
 export class UsersController {
 
     constructor(private userService: UsersService) {}
 
-    @Post("/registration")
-    registration(@Body() userDto: CreateUserDto) {
-        try {
-            return this.userService.registration(userDto)
-        } catch (error) {
-            throw new HttpException({error: error.msg}, HttpStatus.INTERNAL_SERVER_ERROR)
-        }
+    @ApiOperation({summary: "User creation"})
+    @ApiResponse({status: 200, type: User})
+    @UsePipes(ValidationPipe)
+    @Post("/create-user")
+    createUser(@Body() userDto: RegisterUserDto) {
+        return this.userService.createUser(userDto)
     }
 
-    @Post("/login")
-    login(@Body() userDto: CreateUserDto) {
-        try {
-            return this.userService.login(userDto)
-        } catch (error) {
-            throw new HttpException({error: error.msg}, HttpStatus.INTERNAL_SERVER_ERROR)
-        }
+    @ApiOperation({summary: "Getting all users"})
+    @ApiResponse({status: 200, type: User})
+    @UseGuards(JwtAuthGuard)
+    @Get("/get-users")
+    getUsers() {
+        return this.userService.getUsers()
     }
 
+    @ApiOperation({summary: "Giving a role"})
+    @ApiResponse({status: 200})
+    @UseGuards(JwtAuthGuard)
+    @UseGuards(RoleGuard)
+    @Roles("ADMIN")
+    @Post("/add-role")
+    addRole(@Body() dto: AddRoleDto) {
+        return this.userService.addRole(dto)
+    }
+
+    @ApiOperation({summary: "Banning"})
+    @ApiResponse({status: 200})
+    @UseGuards(JwtAuthGuard)
+    @UseGuards(RoleGuard)
+    @Roles("ADMIN")
+    @Post("/ban-user")
+    banUser(@Body() dto: BanUserDto) {
+    }
+
+    @ApiOperation({summary: "Receiving admin role"})
+    @ApiResponse({status: 200, type: Role})
+    @UseGuards(JwtAuthGuard)
+    @Post("/get-admin-role/:id")
+    getAdminRole(@Param("id") userId: AddRoleDto) {
+        return this.userService.getAdminRole(userId)
+    }
+
+    @ApiOperation({summary: "Getting user by id"})
+    @ApiResponse({status: 200, type: User})
+    @UseGuards(JwtAuthGuard)
+    @Get("/get-user/:id")
+    getUserById(@Param("id") dto: GetUserByIdDto) {
+        return this.userService.getUserById(dto)
+    }
 }
