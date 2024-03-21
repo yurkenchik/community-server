@@ -1,43 +1,41 @@
 import {HttpException, HttpStatus, Injectable, UnauthorizedException} from '@nestjs/common';
 import {UsersService} from "../users/users.service";
-import {CreateUserDto} from "../users/dto/create-user.dto";
+import {RegisterUserDto} from "../users/dto/register-user.dto";
 import {JwtService} from "@nestjs/jwt";
 import * as bcrypt from "bcryptjs"
-import {User} from "../users/users.model";
+import {LoginUserDto} from "../users/dto/login-user.dto";
+import {TokenService} from "../token/token.service";
+
+interface IToken {
+    token: string
+}
 
 @Injectable()
 export class AuthService {
 
     constructor(private userService: UsersService,
-                private jwtService: JwtService) {}
+                private jwtService: JwtService,
+                private tokenService: TokenService) {}
 
-    async generateToken(userData: User) {
-        const payload = {
-            id: userData.id,
-            username: userData.username,
-            email: userData.email,
-            password: userData.password
-        }
+    private async validateUser(dto: LoginUserDto) {
 
-        const token = this.jwtService.sign(payload)
-
-        return {
-            token: token
-        }
-    }
-
-    private async validateUser(dto: CreateUserDto) {
+        const unauthorizedMessage = "Incorrect email or password"
         const user = await this.userService.findUserByEmail(dto)
+        console.log(typeof user)
+        console.log(user)
         const isPasswordEqual = await bcrypt.compare(dto.password, user.password)
 
+        console.log(`is password correct: ${isPasswordEqual}`)
         if (user && isPasswordEqual) {
             return user
         }
 
-        throw new UnauthorizedException({message: "Incorrect email or password"})
+        throw new UnauthorizedException({message: unauthorizedMessage})
+
     }
 
-    async registration(dto: CreateUserDto) {
+    async registration(dto: RegisterUserDto) {
+
         const emailCandidate = await this.userService.findUserByEmail(dto)
 
         if (emailCandidate) {
@@ -46,12 +44,15 @@ export class AuthService {
 
         const hashedPassword = await bcrypt.hash(dto.password, 4)
         const user = await this.userService.createUser({ ...dto, password: hashedPassword })
-        return this.generateToken(user)
+        const generateToken = await this.tokenService.generateToken(user)
+
+        return [ generateToken, user ]
     }
 
-    async login(dto: CreateUserDto) {
+    async login(dto: RegisterUserDto) {
         const user = await this.validateUser(dto)
-        return this.generateToken(user)
-    }
+        const generateToken = await this.tokenService.generateToken(user)
 
+        return [ generateToken, user ]
+    }
 }
