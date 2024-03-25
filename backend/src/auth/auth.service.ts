@@ -55,4 +55,17 @@ export class AuthService {
 
         return [ generateToken, user ]
     }
+
+    async getUserIdByToken(token: string): Promise<string> {
+        try {
+            const decodedToken = this.jwtService.verify(token)
+
+            const userId = decodedToken.id
+            return userId
+        } catch (error) {
+            console.log(error.message)
+            throw new Error("Invalid token")
+        }
+
+    }
 }

@@ -17,7 +17,7 @@ import {RolesModule} from "../roles/roles.module";
       JwtModule.register({
           secret: process.env.JWT_SECRET_KEY || "secret",
           signOptions: {
-              expiresIn: "24h"
+              expiresIn: "72h"
           }
       })
   ],

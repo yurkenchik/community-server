@@ -8,7 +8,6 @@ export class JwtAuthGuard implements CanActivate {
 
     unauthorizedMessage = "user is not authorized"
 
-
     constructor(private jwtService: JwtService) {}
 
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
