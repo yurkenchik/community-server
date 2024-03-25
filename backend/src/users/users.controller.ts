@@ -6,7 +6,7 @@ import {
     HttpException,
     HttpStatus,
     Param,
-    Post, UseGuards,
+    Post, Req, UseGuards,
     UsePipes,
     ValidationPipe
 } from '@nestjs/common';
@@ -20,7 +20,8 @@ import {RoleGuard} from "../auth/role.guard";
 import {AddRoleDto} from "./dto/add-role.dto";
 import {GetUserByIdDto} from "./dto/get-user-by-id.dto";
 import {Role} from "../roles/roles.model";
-import {BanUserDto} from "./dto/banUser.dto";
+import {BanUserDto} from "./dto/ban-user.dto";
+import {JwtMiddleware} from "../middlewares/jwt.middleware";
 
 @Controller('users')
 export class UsersController {
@@ -60,6 +61,7 @@ export class UsersController {
     @Roles("ADMIN")
     @Post("/ban-user")
     banUser(@Body() dto: BanUserDto) {
+        return this.userService.banUser(dto)
     }
 
     @ApiOperation({summary: "Receiving admin role"})

@@ -5,11 +5,10 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {Repository} from "typeorm";
 import {LoginUserDto} from "./dto/login-user.dto";
 import {RemoveUserDto} from "./dto/remove-user.dto";
-import {Role} from "../roles/roles.model";
 import {RolesService} from "../roles/roles.service";
 import {AddRoleDto} from "./dto/add-role.dto";
-import * as http from "http";
 import {GetUserByIdDto} from "./dto/get-user-by-id.dto";
+import {BanUserDto} from "./dto/ban-user.dto";
 
 @Injectable()
 export class UsersService {
@@ -20,12 +19,13 @@ export class UsersService {
         private rolesService: RolesService) {
     }
 
-    async findUserByEmail(dto: LoginUserDto) {
-        const user = await this.userRepository.findOne({where: {email: dto.email}})
+    async findUserByEmail(dto: LoginUserDto): Promise<User> {
+        const user = await this.userRepository.findOne({where: {email: dto.email}, relations: ["roles"]})
+
         return user
     }
 
-    async createUser(dto: RegisterUserDto) {
+    async createUser(dto: RegisterUserDto): Promise<User> {
         const userData = await this.userRepository.create(dto)
 
         const role = await this.rolesService.getRoleByValue("USER")
@@ -41,10 +41,11 @@ export class UsersService {
         return savedUserToDB
     }
 
-    async getUsers() {
+    async getUsers(): Promise<User[]> {
         const users = await this.userRepository
             .createQueryBuilder("user")
             .leftJoinAndSelect("user.roles", "role")
+            .leftJoinAndSelect("user.posts", "post")
             .getMany()
         return users
     }
@@ -60,7 +61,7 @@ export class UsersService {
         return removedUser
     }
 
-    async addRole(dto: AddRoleDto) {
+    async addRole(dto: AddRoleDto): Promise<User> {
         try {
 
             const userData = await this.userRepository.findOneOrFail({
@@ -77,8 +78,8 @@ export class UsersService {
 
             if (role && userData) {
                 userData.roles = [ ...userData.roles, role ]
-                await this.userRepository.save(userData)
-                return dto
+                const savedUserToRole = await this.userRepository.save(userData)
+                return savedUserToRole
             }
 
         } catch (error) {
@@ -88,7 +89,7 @@ export class UsersService {
         }
     }
 
-    async getAdminRole(dto: AddRoleDto) {
+    async getAdminRole(dto: AddRoleDto): Promise<User> {
 
         const userData = await this.userRepository.findOne({
             where: {id: dto.userId},
@@ -122,6 +123,20 @@ export class UsersService {
             relations: ["roles"]
         })
         return user
+    }
+
+    async banUser(dto: BanUserDto): Promise<User> {
+        const user = await this.userRepository.findOne({where: {email: dto.email}})
+
+        if (!user) {
+            throw new HttpException("User is not found", HttpStatus.NOT_FOUND)
+        }
+
+        user.banReason = dto.banReason
+        user.banned = true
+
+        const banedUser = await this.userRepository.save(user)
+        return banedUser
     }
 
 }
