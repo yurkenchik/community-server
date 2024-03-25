@@ -7,6 +7,7 @@ import {Types} from "mysql2";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {User} from "../users/users.model";
 import {Post} from "./posts.model";
+import {AuthModule} from "../auth/auth.module";
 
 @Module({
     controllers: [PostsController],
@@ -14,6 +15,7 @@ import {Post} from "./posts.model";
     imports: [
         forwardRef(() => JwtModule),
         forwardRef(() => UsersModule),
+        forwardRef(() => AuthModule),
         TypeOrmModule.forFeature([User, Post])
     ],
     exports: [

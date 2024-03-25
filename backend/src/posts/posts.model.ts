@@ -31,15 +31,11 @@ export class Post {
     @UpdateDateColumn({type: "timestamp", default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP"})
     updatedAt: Date
 
-    @ApiProperty({example: "4123ds4-4324ds-234", description: "user id"})
-    @PrimaryColumn()
-    userId: string
-
     @ApiProperty({example: "asdaikoskop23edsad243234.png", description: "image link"})
     @Column({type: "varchar"})
     image: string
 
-    @ManyToOne(() => User, user => user.posts)
+    @ManyToOne(() => User, user => user.posts, { nullable: false })
     author: User
 
 }
