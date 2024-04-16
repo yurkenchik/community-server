@@ -12,6 +12,8 @@ import {RolesModule} from "../roles/roles.module";
 import {UserRoles} from "../roles/user_roles.model";
 import {PostsModule} from "../posts/posts.module";
 import {Post} from "../posts/posts.model";
+import {CommentsModule} from "../comments/comments.module";
+
 
 @Module({
   providers: [UsersService],
@@ -20,6 +22,7 @@ import {Post} from "../posts/posts.model";
       forwardRef(() => TokenModule),
       forwardRef(() => AuthModule),
       forwardRef(() => PostsModule),
+      forwardRef(() => CommentsModule),
       RolesModule,
       TypeOrmModule.forFeature([User, Role, UserRoles, Post]),
       JwtModule.register({
@@ -33,7 +36,6 @@ import {Post} from "../posts/posts.model";
       UsersService,
       TypeOrmModule
   ]
-
 })
 
 export class UsersModule {}

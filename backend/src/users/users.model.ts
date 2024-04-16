@@ -2,6 +2,10 @@ import {Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToMany, JoinTabl
 import {ApiProperty} from "@nestjs/swagger";
 import {Role} from "../roles/roles.model";
 import {Post} from "../posts/posts.model";
+import {Message} from "../chat/models/message.model";
+import {ConnectedUser} from "../chat/models/connected-user.model";
+import {Chatroom} from "../chat/models/chatroom.model";
+import {JoinedRoom} from "../chat/models/joined-room.model";
 
 
 @Entity()
@@ -39,4 +43,15 @@ export class User {
     @JoinTable()
     posts: Role[]
 
+    @OneToMany(() => Message, message => message.user)
+    messages: Message[]
+
+    @ManyToMany(() => Chatroom, chatroom => chatroom.users)
+    chatRooms: Chatroom[]
+
+    @OneToMany(() => ConnectedUser, connection => connection.user)
+    connections: ConnectedUser[]
+
+    @OneToMany(() => JoinedRoom, joinedRoom => joinedRoom.user)
+    joinedRooms: JoinedRoom[]
 }

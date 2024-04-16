@@ -19,9 +19,9 @@ export class UsersService {
         private rolesService: RolesService) {
     }
 
+
     async findUserByEmail(dto: LoginUserDto): Promise<User> {
         const user = await this.userRepository.findOne({where: {email: dto.email}, relations: ["roles"]})
-
         return user
     }
 
@@ -117,11 +117,12 @@ export class UsersService {
 
     }
 
-    async getUserById(dto: GetUserByIdDto) {
+    // changed relations from roles to posts
+    async getUserById(userId: GetUserByIdDto) {
         const user = await this.userRepository.findOne({
-            where: {id: dto.userId},
-            relations: ["roles"]
+            where: {id: userId.userId},
         })
+        console.log(`user id from getUserById method: ${user.id}`)
         return user
     }
 
@@ -137,6 +138,11 @@ export class UsersService {
 
         const banedUser = await this.userRepository.save(user)
         return banedUser
+    }
+
+    async getUserByEmailAndChangePassword(email: string) {
+        const user = await this.userRepository.findOne({where: {email: email}})
+        return user
     }
 
 }
