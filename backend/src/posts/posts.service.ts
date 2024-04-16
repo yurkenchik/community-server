@@ -22,14 +22,20 @@ export class PostsService {
     }
 
     async getAllPosts(userId: GetUserByIdDto): Promise<Post[]> {
+        console.log(userId)
         const user = await this.userService.getUserById(userId)
         if (!user) {
             throw new NotFoundException(this.NOT_FOUND_USER)
         }
-        const posts = await this.postRepository.find()
+        console.log(user)
+        const posts = await this.postRepository.find({
+            where: {author: user},
+        })
+        console.log(posts)
         if (!posts) {
             throw new HttpException("Posts are not found", HttpStatus.NOT_FOUND)
         }
+
         return posts
     }
 
@@ -87,11 +93,24 @@ export class PostsService {
         return updatedPost
     }
 
-    private async getPostById(postId: FindPostByIdDto): Promise<Post> {
+    async getPostById(postId: FindPostByIdDto): Promise<Post> {
         const post = await this.postRepository.findOne({where: {id: postId.id}})
 
         if (!post) {
             throw new NotFoundException(this.NOT_FOUND_POST)
+        }
+
+        return post
+    }
+
+    async getPostByIdWithUserId(userId: GetUserByIdDto, postId: FindPostByIdDto) {
+        const user = await this.userService.getUserById(userId)
+        const post = await this.postRepository.findOne({
+            where: {id: postId.id, author: user}
+        })
+
+        if (!post) {
+            throw new NotFoundException("Post was not found")
         }
 
         return post

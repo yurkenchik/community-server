@@ -3,11 +3,11 @@ import { PostsService } from './posts.service';
 import {PostsController} from "./posts.controller";
 import {UsersModule} from "../users/users.module";
 import {JwtModule} from "@nestjs/jwt";
-import {Types} from "mysql2";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {User} from "../users/users.model";
 import {Post} from "./posts.model";
 import {AuthModule} from "../auth/auth.module";
+import {CommentsModule} from "../comments/comments.module";
 
 @Module({
     controllers: [PostsController],
@@ -16,6 +16,7 @@ import {AuthModule} from "../auth/auth.module";
         forwardRef(() => JwtModule),
         forwardRef(() => UsersModule),
         forwardRef(() => AuthModule),
+        forwardRef(() => CommentsModule),
         TypeOrmModule.forFeature([User, Post])
     ],
     exports: [

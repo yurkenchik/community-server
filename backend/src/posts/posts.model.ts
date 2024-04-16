@@ -1,14 +1,15 @@
 import {
     Column,
     CreateDateColumn,
-    Entity,
-    ManyToOne,
+    Entity, JoinTable,
+    ManyToOne, OneToMany,
     PrimaryColumn,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
 import {User} from "../users/users.model";
 import {ApiProperty} from "@nestjs/swagger";
+import {Comment} from "../comments/comments.model";
 
 @Entity()
 export class Post {
@@ -37,5 +38,9 @@ export class Post {
 
     @ManyToOne(() => User, user => user.posts, { nullable: false })
     author: User
+
+    @OneToMany(() => Comment, comment => comment.post)
+    @JoinTable()
+    comments: Comment[]
 
 }

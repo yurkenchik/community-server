@@ -59,7 +59,7 @@ export class PostsController {
     @Get("/get-posts")
     getAllPosts(@Req() request) {
         try {
-            const userId = request.user
+            const userId = request.user.id
             return this.postService.getAllPosts(userId)
         } catch (error) {
             throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR)
