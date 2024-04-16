@@ -9,10 +9,11 @@ export class TokenService {
 
     async generateToken(userData: User) {
         const payload = {
+            id: userData.id,
             username: userData.username,
             email: userData.email,
             password: userData.password,
-            roles: userData.roles
+            roles: userData.roles,
         }
 
         const token = await this.jwtService.sign(payload)
