@@ -1,10 +1,13 @@
-import {HttpException, HttpStatus, Injectable, UnauthorizedException} from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException} from '@nestjs/common';
 import {UsersService} from "../users/users.service";
 import {RegisterUserDto} from "../users/dto/register-user.dto";
 import {JwtService} from "@nestjs/jwt";
 import * as bcrypt from "bcryptjs"
 import {LoginUserDto} from "../users/dto/login-user.dto";
 import {TokenService} from "../token/token.service";
+import {ChangePasswordDto} from "./dto/change-password.dto";
+import {NotFoundError} from "rxjs";
+import {EmailService} from "../email/email.service";
 
 interface IToken {
     token: string
@@ -15,14 +18,14 @@ export class AuthService {
 
     constructor(private userService: UsersService,
                 private jwtService: JwtService,
-                private tokenService: TokenService) {}
+                private tokenService: TokenService,
+                private emailService: EmailService) {}
 
+    // TODO: need to fix bugs with validation, when email is incorrect
     private async validateUser(dto: LoginUserDto) {
 
         const unauthorizedMessage = "Incorrect email or password"
         const user = await this.userService.findUserByEmail(dto)
-        console.log(typeof user)
-        console.log(user)
         const isPasswordEqual = await bcrypt.compare(dto.password, user.password)
 
         console.log(`is password correct: ${isPasswordEqual}`)
@@ -49,7 +52,7 @@ export class AuthService {
         return [ generateToken, user ]
     }
 
-    async login(dto: RegisterUserDto) {
+    async login(dto: LoginUserDto) {
         const user = await this.validateUser(dto)
         const generateToken = await this.tokenService.generateToken(user)
 
@@ -66,6 +69,15 @@ export class AuthService {
             console.log(error.message)
             throw new Error("Invalid token")
         }
+    }
 
+    async changePassword(dto: ChangePasswordDto) {
+        const userData = await this.userService.getUserByEmailAndChangePassword(dto.email)
+
+        const sentEmail = await this.emailService.sendChangePasswordCode(dto.email)
+
+        if (!userData) {
+            throw new NotFoundException("user with this email is not found")
+        }
     }
 }

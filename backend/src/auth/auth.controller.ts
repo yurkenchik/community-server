@@ -34,8 +34,9 @@ export class AuthController {
 
     @ApiOperation({summary: "login"})
     @ApiResponse({status: 200})
+    @UsePipes(ValidationPipe)
     @Post("/login")
-    login(@Body() userDto: RegisterUserDto) {
+    login(@Body() userDto: LoginUserDto) {
         try {
             return this.authService.login(userDto)
         } catch (error) {
