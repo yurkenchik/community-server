@@ -7,7 +7,6 @@ async function start() {
     const PORT = process.env.PORT || 8081
     const app = await NestFactory.create(AppModule)
 
-
     const config = new DocumentBuilder()
         .setTitle("Advanced backend on nest.js course")
         .setDescription("Rest API documentation")
