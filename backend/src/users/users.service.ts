@@ -118,9 +118,9 @@ export class UsersService {
     }
 
     // changed relations from roles to posts
-    async getUserById(userId: GetUserByIdDto) {
+    async getUserById(userId: string) {
         const user = await this.userRepository.findOne({
-            where: {id: userId.userId},
+            where: {id: userId},
         })
         console.log(`user id from getUserById method: ${user.id}`)
         return user

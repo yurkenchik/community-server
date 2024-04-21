@@ -33,7 +33,11 @@ export class UsersController {
     @UsePipes(ValidationPipe)
     @Post("/create-user")
     createUser(@Body() userDto: RegisterUserDto) {
-        return this.userService.createUser(userDto)
+        try {
+            return this.userService.createUser(userDto)
+        } catch (error) {
+            throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 
     @ApiOperation({summary: "Getting all users"})
@@ -41,7 +45,11 @@ export class UsersController {
     @UseGuards(JwtAuthGuard)
     @Get("/get-users")
     getUsers() {
-        return this.userService.getUsers()
+        try {
+            return this.userService.getUsers()
+        } catch (error) {
+            throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 
     @ApiOperation({summary: "Giving a role"})
@@ -51,7 +59,11 @@ export class UsersController {
     @Roles("ADMIN")
     @Post("/add-role")
     addRole(@Body() dto: AddRoleDto) {
-        return this.userService.addRole(dto)
+        try {
+            return this.userService.addRole(dto)
+        } catch (error) {
+            throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 
     @ApiOperation({summary: "Banning"})
@@ -61,7 +73,11 @@ export class UsersController {
     @Roles("ADMIN")
     @Post("/ban-user")
     banUser(@Body() dto: BanUserDto) {
-        return this.userService.banUser(dto)
+        try {
+            return this.userService.banUser(dto)
+        } catch (error) {
+            throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 
     @ApiOperation({summary: "Receiving admin role"})
@@ -69,14 +85,22 @@ export class UsersController {
     @UseGuards(JwtAuthGuard)
     @Post("/get-admin-role/:id")
     getAdminRole(@Param("id") userId: AddRoleDto) {
-        return this.userService.getAdminRole(userId)
+        try {
+            return this.userService.getAdminRole(userId)
+        } catch (error) {
+            throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 
     @ApiOperation({summary: "Getting user by id"})
     @ApiResponse({status: 200, type: User})
     @UseGuards(JwtAuthGuard)
     @Get("/get-user/:id")
-    getUserById(@Param("id") dto: GetUserByIdDto) {
-        return this.userService.getUserById(dto)
+    getUserById(@Param("id") userId: string) {
+        try {
+            return this.userService.getUserById(userId)
+        } catch (error) {
+            throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 }

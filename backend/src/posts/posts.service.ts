@@ -21,7 +21,7 @@ export class PostsService {
                 private authService: AuthService) {
     }
 
-    async getAllPosts(userId: GetUserByIdDto): Promise<Post[]> {
+    async getAllPosts(userId: string): Promise<Post[]> {
         console.log(userId)
         const user = await this.userService.getUserById(userId)
         if (!user) {
@@ -39,9 +39,9 @@ export class PostsService {
         return posts
     }
 
-    async getPost(userId: GetUserByIdDto, dto: FindPostByIdDto): Promise<Post> {
+    async getPost(userId: string, dto: string): Promise<Post> {
         const user = await this.userService.getUserById(userId)
-        const post = await this.postRepository.findOne({where: {id: dto.id}})
+        const post = await this.postRepository.findOne({where: {id: dto}})
         if (!user) {
             throw new NotFoundException(this.NOT_FOUND_USER)
         }
@@ -53,7 +53,7 @@ export class PostsService {
         return post
     }
 
-    async createPost(userId: GetUserByIdDto, postDto: CreatePostDto): Promise<Post> {
+    async createPost(userId: string, postDto: CreatePostDto): Promise<Post> {
 
         const user = await this.userService.getUserById(userId)
         const post = await this.postRepository.create(postDto)
@@ -69,13 +69,13 @@ export class PostsService {
         return savedPostToDB
     }
 
-    private async findPostBtId(dto: FindPostByIdDto): Promise<Post> {
-        const post = await this.postRepository.findOne({where: {id: dto.id}})
+    private async findPostById(dto: string): Promise<Post> {
+        const post = await this.postRepository.findOne({where: {id: dto}})
         return post
     }
 
-    async updatePost(userId: GetUserByIdDto, postId: FindPostByIdDto, dto: UpdatePostDto): Promise<Post> {
-        const post = await this.findPostBtId(postId)
+    async updatePost(userId: string, postId: string, dto: UpdatePostDto): Promise<Post> {
+        const post = await this.findPostById(postId)
 
         if (!post) {
             throw new HttpException(this.NOT_FOUND_POST, HttpStatus.NOT_FOUND)
@@ -93,8 +93,8 @@ export class PostsService {
         return updatedPost
     }
 
-    async getPostById(postId: FindPostByIdDto): Promise<Post> {
-        const post = await this.postRepository.findOne({where: {id: postId.id}})
+    async getPostById(postId: string): Promise<Post> {
+        const post = await this.postRepository.findOne({where: {id: postId}})
 
         if (!post) {
             throw new NotFoundException(this.NOT_FOUND_POST)
@@ -103,20 +103,21 @@ export class PostsService {
         return post
     }
 
-    async getPostByIdWithUserId(userId: GetUserByIdDto, postId: FindPostByIdDto) {
+    async getPostByIdWithUserId(userId: string, postId: string) {
         const user = await this.userService.getUserById(userId)
         const post = await this.postRepository.findOne({
-            where: {id: postId.id, author: user}
+            where: {id: postId, author: user}
         })
 
         if (!post) {
             throw new NotFoundException("Post was not found")
         }
+        console.log(post)
 
         return post
     }
 
-    async deletePost(userId: GetUserByIdDto, postId: FindPostByIdDto): Promise<DeleteResult> {
+    async deletePost(userId: string, postId: string): Promise<DeleteResult> {
 
         const user = await this.userService.getUserById(userId)
         const post = await this.getPostById(postId)

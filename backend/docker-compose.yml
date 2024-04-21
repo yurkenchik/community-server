@@ -3,7 +3,7 @@ version: '3.0'
 
 services:
   main:
-    container_name: main
+    container_name: community-server
     build:
       context: .
     env_file:

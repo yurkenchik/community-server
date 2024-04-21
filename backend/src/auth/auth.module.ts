@@ -19,7 +19,7 @@ import {EmailModule} from "../email/email.module";
       JwtModule.register({
           secret: process.env.JWT_SECRET_KEY || "secret",
           signOptions: {
-              expiresIn: "144h"
+              expiresIn: "168h"
           }
       })
   ],

@@ -44,7 +44,7 @@ export class PostsController {
     @ApiResponse({status: 200, type: Post})
     @UseGuards(JwtAuthGuard)
     @Patch("/update-post/:id")
-    updatePost(@Req() request, @Param("id") postId: FindPostByIdDto, @Body() dto: UpdatePostDto) {
+    updatePost(@Req() request, @Param("id") postId: string, @Body() dto: UpdatePostDto) {
         try {
             const userId = request.user
             return this.postService.updatePost(userId, postId, dto)
@@ -70,7 +70,7 @@ export class PostsController {
     @ApiResponse({status: 200, type: Post})
     @UseGuards(JwtAuthGuard)
     @Get("/get-post/:id")
-    getOnePost(@Req() request, @Param("id") postId: FindPostByIdDto) {
+    getOnePost(@Req() request, @Param("id") postId: string) {
         try {
             const userId = request.user
             return this.postService.getPost(userId,postId)
@@ -83,7 +83,7 @@ export class PostsController {
     @ApiResponse({status: 200})
     @UseGuards(JwtAuthGuard)
     @Delete("/delete-post/:id")
-    deletePost(@Req() request, @Param("id") postId: FindPostByIdDto) {
+    deletePost(@Req() request, @Param("id") postId: string) {
         try {
             const userId = request.user
             return this.postService.deletePost(userId, postId)

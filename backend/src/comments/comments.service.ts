@@ -21,10 +21,10 @@ export class CommentsService {
     }
 
     // TODO: finish writing function with ids
-    async getComment(userId: GetUserByIdDto, postId: FindPostByIdDto, commentId: GetCommentByIdDto): Promise<Comment> {
+    async getComment(userId: string, postId: string, commentId: string): Promise<Comment> {
         const post = await this.postService.getPostByIdWithUserId(userId, postId)
         const comment = await this.commentRepository.findOne({
-            where: {id: commentId.commentId, post: post}
+            where: {id: commentId, post: post},
         })
         if (!comment) {
             throw new NotFoundException("Comment was not found")
@@ -39,7 +39,7 @@ export class CommentsService {
         })
     }
 
-    async createCommentToPost(userId: GetUserByIdDto, postId: FindPostByIdDto, createCommentDto: CreateCommentDto): Promise<Comment> {
+    async createCommentToPost(userId: string, postId: string, createCommentDto: CreateCommentDto): Promise<Comment> {
         const user = await this.userService.getUserById(userId)
         const post = await this.postService.getPostByIdWithUserId(userId, postId)
 
@@ -57,7 +57,11 @@ export class CommentsService {
         return savedComment
     }
 
-    async updateComment(userId: GetUserByIdDto, postId: FindPostByIdDto, commentId: GetCommentByIdDto, updateCommentDto: UpdateCommentDto) {
+    async updateComment(userId: string,
+                        postId: string,
+                        commentId: string,
+                        updateCommentDto: UpdateCommentDto)
+    {
 
         const post = await this.postService.getPostByIdWithUserId(userId, postId)
 
@@ -66,14 +70,14 @@ export class CommentsService {
         }
 
         const comment = await this.commentRepository.findOne({
-            where: {id: commentId.commentId, post: post}
+            where: {id: commentId, post: post}
         })
         comment.content = updateCommentDto.content
         return comment
 
     }
 
-    async deleteComment(userId: GetUserByIdDto, postId: FindPostByIdDto, commentId: GetCommentByIdDto) {
+    async deleteComment(userId: string, postId: string, commentId: string) {
 
         const comment = this.getComment(userId, postId, commentId)
 
@@ -89,7 +93,9 @@ export class CommentsService {
         return deletedComment
     }
 
-    async getAllYourComments(userId: GetUserByIdDto, postId: FindPostByIdDto): Promise<Comment[]> {
+    async getAllComments(userId: string, postId: string): Promise<Comment[]> {
+        const user = await this.userService.getUserById(userId)
+        console.log(user)
         const post = await this.postService.getPostByIdWithUserId(userId, postId)
         if (!post) {
             throw new NotFoundException("Post was not found")
@@ -98,6 +104,9 @@ export class CommentsService {
         const comments = await this.commentRepository.find({
             where: {post: post}
         })
+        console.log(`user id: ${userId}`)
+        console.log(`post id: ${postId}`)
+        console.log(comments)
 
         return comments
     }
