@@ -48,7 +48,7 @@ export class CommentsController {
             console.log(postId)
             return this.commentsService.createCommentToPost(userId, postId, commentBody)
         } catch (error) {
-            throw new HttpException("Unexpected error", HttpStatus.INTERNAL_SERVER_ERROR)
+            throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
@@ -64,7 +64,7 @@ export class CommentsController {
         try {
             return this.commentsService.createCommentToPost(userId, postId, postBody)
         } catch (error) {
-            throw new HttpException("Unexpected error", HttpStatus.INTERNAL_SERVER_ERROR)
+            throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
@@ -79,7 +79,7 @@ export class CommentsController {
             const userId = request.user.id
             return this.commentsService.getComment(userId, postId, commentId)
         } catch (error) {
-            throw new HttpException("Unexpected error", HttpStatus.INTERNAL_SERVER_ERROR)
+            throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
@@ -94,7 +94,7 @@ export class CommentsController {
         try {
             return this.commentsService.getComment(userId, postId, commentId)
         } catch (error) {
-            throw new HttpException("Unexpected error", HttpStatus.INTERNAL_SERVER_ERROR)
+            throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
@@ -109,7 +109,7 @@ export class CommentsController {
             console.log(postId)
             return this.commentsService.getAllComments(userId, postId)
         } catch (error) {
-            throw new HttpException("Unexpected error", HttpStatus.INTERNAL_SERVER_ERROR)
+            throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
@@ -121,7 +121,7 @@ export class CommentsController {
         try {
             return this.commentsService.getAllComments(userId, postId)
         } catch (error) {
-            throw new HttpException("Unexpected error", HttpStatus.INTERNAL_SERVER_ERROR)
+            throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
@@ -137,7 +137,7 @@ export class CommentsController {
             const userId = request.user.id
             return this.commentsService.updateComment(userId, postId, commentId, updateCommentDto)
         } catch (error) {
-            throw new HttpException("Unexpected error", HttpStatus.INTERNAL_SERVER_ERROR)
+            throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
@@ -153,7 +153,7 @@ export class CommentsController {
         try {
             return this.commentsService.updateComment(userId, postId, commentId, updateCommentDto)
         } catch (error) {
-            throw new HttpException("Unexpected error", HttpStatus.INTERNAL_SERVER_ERROR)
+            throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
@@ -169,7 +169,7 @@ export class CommentsController {
             const userId = request.user.id
             return this.commentsService.deleteComment(userId, postId, commentId)
         } catch (error) {
-            throw new HttpException("Unexpected error", HttpStatus.INTERNAL_SERVER_ERROR)
+            throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
@@ -183,7 +183,7 @@ export class CommentsController {
         try {
             return this.commentsService.deleteComment(userId, postId, commentId)
         } catch (error) {
-            throw new HttpException("Unexpected error", HttpStatus.INTERNAL_SERVER_ERROR)
+            throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
